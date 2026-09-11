@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geri Sayım</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-deep:#141033;
+    --sky-mid:#2a1f52;
+    --sky-horizon:#4a2f6b;
+    --rose:#ff8fab;
+    --gold:#ffd27f;
+    --cream:#faf3e8;
+    --cream-dim:#cfc4e0;
+    --line:rgba(250,243,232,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(255,143,171,0.10), transparent 55%),
+      radial-gradient(ellipse at 80% 10%, rgba(255,210,127,0.08), transparent 50%),
+      linear-gradient(180deg, var(--sky-deep) 0%, var(--sky-mid) 55%, var(--sky-horizon) 100%);
+    font-family:'Inter', sans-serif;
+    color:var(--cream);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* stars */
+  .stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+  .star{position:absolute;background:var(--cream);border-radius:50%;opacity:0.6;animation:twinkle 3.5s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:0.2;}50%{opacity:0.9;}}
+
+  .wrap{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:64px 24px 100px;}
+
+  .eyebrow-free-header{text-align:center;margin-bottom:6px;}
+  .kicker{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:17px;
+    color:var(--rose);
+    letter-spacing:0.01em;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(32px, 7vw, 52px);
+    line-height:1.08;
+    text-align:center;
+    margin:10px 0 8px;
+    color:var(--cream);
+  }
+  .sub{
+    text-align:center;
+    color:var(--cream-dim);
+    font-size:15px;
+    max-width:400px;
+    margin:0 auto 48px;
+    line-height:1.6;
+  }
+
+  /* countdown */
+  .count-group{margin-bottom:38px;}
+  .count-group-title{
+    text-align:center;
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:15px;
+    color:var(--gold);
+    margin-bottom:14px;
+  }
+  .count-row{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+  .count-box{
+    background:rgba(250,243,232,0.05);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:20px 6px;
+    width:78px;
+    text-align:center;
+    backdrop-filter:blur(6px);
+  }
+  .count-num{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:34px;
+    color:var(--gold);
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+  }
+  .count-label{
+    font-size:11px;
+    color:var(--cream-dim);
+    margin-top:6px;
+  }
+  .arrival-date{
+    text-align:center;
+    font-size:13px;
+    color:var(--cream-dim);
+    margin:12px 0 0;
+  }
+  .arrival-date button{
+    background:none;border:none;color:var(--rose);text-decoration:underline;
+    font-size:13px;cursor:pointer;font-family:inherit;padding:0;
+  }
+
+  /* wish-star section */
+  .balloon-section{
+    text-align:center;
+    margin-bottom:64px;
+  }
+  .balloon-title{
+    font-family:'Fraunces', serif;
+    font-size:22px;
+    margin-bottom:4px;
+  }
+  .balloon-hint{
+    color:var(--cream-dim);
+    font-size:13px;
+    margin-bottom:8px;
+  }
+  .balloon-field{
+    position:relative;
+    height:230px;
+    margin-top:20px;
+  }
+  .wish-star{
+    position:absolute;
+    cursor:pointer;
+    background:none;
+    border:none;
+    padding:0;
+    line-height:0;
+    transform:translate(-50%,-50%) scale(1);
+    animation:twinkleStar 2.6s ease-in-out infinite;
+    filter:drop-shadow(0 0 6px rgba(255,210,127,0.55));
+  }
+  .wish-star:hover{filter:drop-shadow(0 0 12px rgba(255,210,127,0.85));}
+  @keyframes twinkleStar{
+    0%,100%{opacity:0.75;}
+    50%{opacity:1;}
+  }
+  .wish-star.bursting{
+    animation:starBurst 0.5s ease forwards;
+    pointer-events:none;
+  }
+  @keyframes starBurst{
+    0%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1;}
+    40%{transform:translate(-50%,-50%) scale(1.9) rotate(35deg);opacity:1;}
+    100%{transform:translate(-50%,-50%) scale(0.3) rotate(60deg);opacity:0;}
+  }
+  .wish-star.entering{
+    animation:starArrive 0.5s ease forwards;
+  }
+  @keyframes starArrive{
+    0%{transform:translate(-50%,-50%) scale(0);opacity:0;}
+    100%{transform:translate(-50%,-50%) scale(1);opacity:0.85;}
+  }
+  .sparkle{
+    position:absolute;
+    border-radius:50%;
+    pointer-events:none;
+    opacity:0;
+  }
+  .comet-trail{
+    position:absolute;
+    width:2px;
+    height:2px;
+    border-radius:50%;
+    pointer-events:none;
+    box-shadow:0 0 8px 2px rgba(255,243,220,0.9);
+  }
+  .message-bubble{
+    max-width:440px;
+    margin:26px auto 0;
+    background:rgba(250,243,232,0.07);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:20px 26px;
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:15.5px;
+    line-height:1.6;
+    color:var(--cream);
+    min-height:20px;
+    opacity:0;
+    transform:translateY(6px);
+    transition:opacity 0.35s ease, transform 0.35s ease;
+  }
+  .message-bubble.show{opacity:1;transform:translateY(0);}
+
+  /* journal */
+  .journal{
+    border-top:1px solid var(--line);
+    padding-top:44px;
+  }
+  .journal-title{
+    font-family:'Fraunces', serif;
+    font-size:22px;
+    text-align:center;
+    margin-bottom:6px;
+  }
+  .journal-hint{
+    text-align:center;
+    color:var(--cream-dim);
+    font-size:13px;
+    margin-bottom:26px;
+  }
+  textarea{
+    width:100%;
+    background:rgba(250,243,232,0.06);
+    border:1px solid var(--line);
+    border-radius:14px;
+    color:var(--cream);
+    font-family:'Inter', sans-serif;
+    font-size:14px;
+    padding:14px 16px;
+    resize:vertical;
+    min-height:78px;
+    outline:none;
+  }
+  textarea::placeholder{color:rgba(207,196,224,0.5);}
+  textarea:focus{border-color:var(--rose);}
+  .save-row{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:10px;
+  }
+  .save-btn{
+    background:var(--rose);
+    color:var(--sky-deep);
+    border:none;
+    border-radius:100px;
+    padding:9px 20px;
+    font-size:13px;
+    font-weight:600;
+    font-family:inherit;
+    cursor:pointer;
+    transition:background 0.15s ease, transform 0.15s ease;
+  }
+  .save-btn:hover{background:var(--gold);transform:translateY(-1px);}
+  .save-btn:disabled{opacity:0.4;cursor:default;transform:none;}
+
+  .entries{margin-top:32px;display:flex;flex-direction:column;gap:12px;}
+  .entry{
+    background:rgba(250,243,232,0.045);
+    border:1px solid var(--line);
+    border-left:2px solid var(--rose);
+    border-radius:10px;
+    padding:14px 18px;
+  }
+  .entry-meta{
+    display:flex;
+    justify-content:space-between;
+    font-size:11.5px;
+    color:var(--cream-dim);
+    margin-bottom:6px;
+  }
+  .entry-days{color:var(--gold);font-weight:600;}
+  .entry-text{font-size:14px;line-height:1.55;color:var(--cream);white-space:pre-wrap;}
+  .entry-del{
+    background:none;border:none;color:var(--cream-dim);
+    cursor:pointer;font-size:12px;font-family:inherit;
+    text-decoration:underline;
+  }
+  .empty-note{
+    text-align:center;color:var(--cream-dim);font-size:13px;
+    padding:20px 0;
+  }
+  .loading{text-align:center;color:var(--cream-dim);font-size:13px;}
+  .who-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;}
+  .who-label{font-size:12.5px;color:var(--cream-dim);}
+  .who-btn{
+    background:rgba(250,243,232,0.08);border:1px solid var(--line);
+    color:var(--gold);border-radius:100px;padding:4px 14px;
+    font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;
+  }
+  .entry-author{color:var(--rose);font-weight:600;}
+  .sync-note{text-align:center;color:var(--cream-dim);font-size:11px;margin-top:14px;opacity:0.7;}
+  .lock-screen{
+    position:fixed;inset:0;z-index:50;
+    background:linear-gradient(180deg, var(--sky-deep) 0%, var(--sky-mid) 55%, var(--sky-horizon) 100%);
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
+  }
+  .lock-box{max-width:320px;width:100%;text-align:center;}
+  .lock-title{font-family:'Fraunces', serif;font-size:26px;margin-bottom:8px;}
+  .lock-hint{color:var(--cream-dim);font-size:13px;margin-bottom:22px;}
+  .lock-input{
+    width:100%;background:rgba(250,243,232,0.07);border:1px solid var(--line);
+    border-radius:12px;color:var(--cream);font-family:inherit;font-size:15px;
+    padding:12px 16px;text-align:center;outline:none;letter-spacing:2px;
+  }
+  .lock-input:focus{border-color:var(--rose);}
+  .lock-btn{
+    margin-top:14px;width:100%;background:var(--rose);color:var(--sky-deep);
+    border:none;border-radius:100px;padding:11px 20px;font-size:14px;font-weight:600;
+    font-family:inherit;cursor:pointer;
+  }
+  .lock-error{color:var(--rose);font-size:12.5px;margin-top:10px;min-height:16px;}
+  body.locked > *:not(.lock-screen){display:none;}
+
+  @media (prefers-reduced-motion: reduce){
+    .balloon.popped{animation:none;opacity:0;}
+    .star{animation:none;}
+  }
+</style>
+</head>
+<body class="locked">
+
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-box">
+    <div class="lock-title">🔒 Xoş gəldin</div>
+    <div class="lock-hint">Daxil olmaq üçün parolu yaz</div>
+    <input type="password" class="lock-input" id="lockInput" placeholder="Parol" autofocus>
+    <button class="lock-btn" id="lockBtn">Daxil ol</button>
+    <div class="lock-error" id="lockError"></div>
+  </div>
+</div>
+
+<div class="stars" id="stars"></div>
+
+<div class="wrap">
+
+  <div class="eyebrow-free-header">
+    <div class="kicker">iki şəhər, bir sayğac</div>
+  </div>
+  <h1>Geri sayım</h1>
+  <p class="sub">İki tarixə qədər qalan vaxt, hər gün, hər saat, hər dəqiqə burada sayılır.</p>
+
+  <div class="count-group">
+    <div class="count-group-title">İşdən çıxana qədər</div>
+    <div class="count-row" id="countRow1">
+      <div class="count-box"><div class="count-num" id="numDays1">--</div><div class="count-label">gün</div></div>
+      <div class="count-box"><div class="count-num" id="numHours1">--</div><div class="count-label">saat</div></div>
+      <div class="count-box"><div class="count-num" id="numMins1">--</div><div class="count-label">dəqiqə</div></div>
+      <div class="count-box"><div class="count-num" id="numSecs1">--</div><div class="count-label">saniyə</div></div>
+    </div>
+    <div class="arrival-date" id="arrivalLine1"></div>
+  </div>
+
+  <div class="count-group">
+    <div class="count-group-title">Görüşənə qədər</div>
+    <div class="count-row" id="countRow2">
+      <div class="count-box"><div class="count-num" id="numDays2">--</div><div class="count-label">gün</div></div>
+      <div class="count-box"><div class="count-num" id="numHours2">--</div><div class="count-label">saat</div></div>
+      <div class="count-box"><div class="count-num" id="numMins2">--</div><div class="count-label">dəqiqə</div></div>
+      <div class="count-box"><div class="count-num" id="numSecs2">--</div><div class="count-label">saniyə</div></div>
+    </div>
+    <div class="arrival-date" id="arrivalLine2"></div>
+  </div>
+
+  <div class="balloon-section">
+    <div class="balloon-title">Göydə dilək tut</div>
+    <div class="balloon-hint">Gün ağır keçibsə, bir ulduz seç — hər dəfə fərqli söz pıçıldayacaq</div>
+    <div class="balloon-field" id="balloonField"></div>
+    <div class="message-bubble" id="msgBubble"></div>
+  </div>
+
+  <div class="journal">
+    <div class="journal-title">Bugünün qeydi</div>
+    <div class="journal-hint">Günü bir neçə cümlə ilə özətlə — ikiniz də görəcəksiniz</div>
+    <div class="who-row">
+      <span class="who-label">Kim yazır:</span>
+      <button class="who-btn" id="whoBtn">...</button>
+    </div>
+    <textarea id="entryInput" placeholder="Bu gün necə keçdi?"></textarea>
+    <div class="save-row">
+      <button class="save-btn" id="saveBtn">Yadda saxla</button>
+    </div>
+    <div class="entries" id="entriesList">
+      <div class="loading">Yüklənir…</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase (paylaşılan yaddaş üçün) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<script>
+/* ---------- şifrə qapısı ---------- */
+const SITE_PASSWORD = "aytac123";
+const lockScreen = document.getElementById('lockScreen');
+const lockInput = document.getElementById('lockInput');
+const lockBtn = document.getElementById('lockBtn');
+const lockError = document.getElementById('lockError');
+
+function unlock(){
+  document.body.classList.remove('locked');
+  lockScreen.remove();
+}
+if(localStorage.getItem('siteUnlocked') === 'yes'){
+  unlock();
+}
+function tryUnlock(){
+  if(lockInput.value === SITE_PASSWORD){
+    localStorage.setItem('siteUnlocked', 'yes');
+    unlock();
+  }else{
+    lockError.textContent = 'Səhv parol, bir də cəhd et.';
+    lockInput.value = '';
+    lockInput.focus();
+  }
+}
+lockBtn.addEventListener('click', tryUnlock);
+lockInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') tryUnlock(); });
+
+/* ---------- FIREBASE CONFIG ----------
+   Buranı öz Firebase layihənin konfiqi ilə əvəz et.
+   (Aşağıdakı izahatda necə alacağını göstərmişəm) */
+const firebaseConfig = {
+  apiKey: "AIzaSyA-lVO3E_ISGwISrEMDJ-OxE73cVk82xYc",
+  authDomain: "timer-788b5.firebaseapp.com",
+  databaseURL: "https://timer-788b5-default-rtdb.firebaseio.com",
+  projectId: "timer-788b5",
+  storageBucket: "timer-788b5.firebasestorage.app",
+  messagingSenderId: "40695055570",
+  appId: "1:40695055570:web:3ca099d40b305a3516990b"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const entriesRef = db.ref('entries');
+
+/* ---------- config ---------- */
+// Hər iki tarixi öz planına uyğun dəyiş: (il, ay-1, gün, saat, dəqiqə)
+const WORK_END_DATE = new Date(2026, 8, 30, 0, 0, 0); // 30 sentyabr 2026 — işdən çıxanda
+const MEET_DATE = new Date(2026, 9, 20, 0, 0, 0);      // 20 oktyabr 2026 — görüşəndə
+
+/* ---------- stars ---------- */
+const starsEl = document.getElementById('stars');
+for(let i=0;i<70;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  const size=Math.random()*2+1;
+  s.style.width=size+'px';
+  s.style.height=size+'px';
+  s.style.left=Math.random()*100+'%';
+  s.style.top=Math.random()*60+'%';
+  s.style.animationDelay=(Math.random()*3.5)+'s';
+  starsEl.appendChild(s);
+}
+
+/* ---------- countdown ---------- */
+function fmtArrival(d){
+  return d.toLocaleDateString('az-AZ', {day:'numeric', month:'long', year:'numeric'});
+}
+document.getElementById('arrivalLine1').textContent = 'Tarix: ' + fmtArrival(WORK_END_DATE);
+document.getElementById('arrivalLine2').textContent = 'Tarix: ' + fmtArrival(MEET_DATE);
+
+function pad(n){return n.toString().padStart(2,'0');}
+function updateOne(targetDate, suffix){
+  const now = new Date();
+  let diff = targetDate - now;
+  if(diff < 0) diff = 0;
+  const days = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  const secs = Math.floor((diff % 60000) / 1000);
+  document.getElementById('numDays'+suffix).textContent = days;
+  document.getElementById('numHours'+suffix).textContent = pad(hours);
+  document.getElementById('numMins'+suffix).textContent = pad(mins);
+  document.getElementById('numSecs'+suffix).textContent = pad(secs);
+  return days;
+}
+let currentDaysLeft = 0; // gün sayı jurnal qeydlərinə yazılır (görüş tarixinə görə)
+function updateCountdown(){
+  updateOne(WORK_END_DATE, '1');
+  currentDaysLeft = updateOne(MEET_DATE, '2');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+/* ---------- wish stars ---------- */
+const messages = [
+  "İnsan ən çox o vaxt güclüdür ki, özünü ən zəif hesab edir — çünki o an belə ayaqda qalmaq özü bir gücdür, sadəcə görünmür.",
+  "Bir il əvvəlki özünə bax. O vaxt \"bunu necə keçəcəm\" deyirdin, indi arxada qalıb. Bu gün də elə olacaq, sadəcə hələ o məsafədə deyilsən.",
+  "Yorulmaq — bacarmadığının yox, çox şey daşıdığının əlamətidir.",
+  "İnsan öz gücünü o an hiss etmir ki, ona ən çox ehtiyacı olur. Sonra geriyə baxıb \"mən bunu necə etdim\" deyir. Bu gün də o günlərdən biridir, sadəcə hələ tarixi gəlməyib.",
+  "Hər dəfə \"daha bacarmıram\" deyəndə, elə o cümlədən sonra bir addım da atmısan. Bu, təsadüf deyil.",
+  "Ən ağır günlərin sənin ən sakit görünən günlərinin içindən keçib. Kimsə bunu bilmir, amma sən bilirsən — bu kifayətdir.",
+  "Bəzən güc qışqırmaq deyil, sadəcə səhər yenə qalxmaqdır.",
+  "İndi keçdiyin şey, altı ay sonra sənin \"onu necə keçdim\" deyəcəyin hekayə olacaq.",
+  "Bədənin yorulanda ruhun hələ dözür — bunu bilmirsən, amma elədir.",
+  "Ən çox böyüdüyün anlar, ən çox sındığını düşündüyün anlardı.",
+  "Bir vaxt \"bu gecəni necə keçirəcəm\" deyəndə keçirmişdin. Yadında saxlama, amma bədənin yadda saxlayıb — ona görə bu gün də ayaqdasan.",
+  "Ən çox güvəndiyin insanlar da bəzən sənin qədər qorxurdu, sadəcə göstərmirdi. Elə sən də indi elə edirsən — bu, zəiflik deyil, insanlığın.",
+  "Kimsə sənə \"güclüsən\" desə, bəlkə inanmırsan. Amma buna ehtiyacın yoxdur ki inanasan — arxanda qalanlar artıq sübut edib.",
+  "Hər səhər qalxmaq bir qərar deyil bəzən, sadəcə vərdiş kimi görünür. Amma o vərdiş, əslində hər dəfə yenidən seçim etməkdir.",
+  "Bu gün bitməyəcək kimi görünən şey, bir ay sonra \"o vaxt necə də çətin idi\" cümləsinə çevriləcək.",
+  "Özünü ən çətin anında tənha hiss edəndə, elə o an keçmişdə səni ayaqda saxlayan hər şey yenidən işə düşür — sadəcə görmürsən.",
+  "İnsan bəzən öz gücünü kimsə \"bax nə qədər çəkmisən\" deyəndə anlayır. Kimsə deməyibsə, bu, o gücün olmadığı demək deyil.",
+  "Bugünkü yorğunluq, sabahkı \"bunu da atlatdım\" hissinin xammalıdır.",
+  "Ən çox tələsdiyin, ən çox təzyiq altında olduğun günlər — sonradan ən çox öyündüyün günlər olur.",
+  "Kiminsə \"necəsən\" sualına \"yaxşıyam\" deyəndə, əslində \"davam edirəm\" demək istəyirsən. Bu da bir cavabdır, kifayətdir."
+];
+const colors = ['#ffd27f','#ff8fab','#c9a8ff','#8fd8ff','#fff3dc'];
+const field = document.getElementById('balloonField');
+const bubble = document.getElementById('msgBubble');
+const STAR_COUNT = 5;
+
+/* shuffle-bag so a message never repeats until all others have shown */
+let messageBag = [];
+let lastMessage = null;
+function nextMessage(){
+  if(messageBag.length === 0){
+    messageBag = [...messages].sort(()=>Math.random()-0.5);
+    if(messageBag[0] === lastMessage && messageBag.length > 1){
+      [messageBag[0], messageBag[1]] = [messageBag[1], messageBag[0]];
+    }
+  }
+  const msg = messageBag.pop();
+  lastMessage = msg;
+  return msg;
+}
+
+function starSVG(color, size){
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 0 L14.5 9 L24 12 L14.5 15 L12 24 L9.5 15 L0 12 L9.5 9 Z" fill="${color}"/>
+  </svg>`;
+}
+
+function randomSpot(){
+  return { x: 10 + Math.random()*80, y: 10 + Math.random()*80 };
+}
+
+function spawnStar(withEntrance){
+  const el = document.createElement('button');
+  el.className = 'wish-star' + (withEntrance ? ' entering' : '');
+  el.setAttribute('aria-label', 'Dilək ulduzu');
+  const spot = randomSpot();
+  el.style.left = spot.x + '%';
+  el.style.top = spot.y + '%';
+  const size = 22 + Math.random()*16;
+  const color = colors[Math.floor(Math.random()*colors.length)];
+  el.innerHTML = starSVG(color, size);
+  el.addEventListener('click', ()=>burstStar(el, color));
+  field.appendChild(el);
+}
+
+function burstStar(el, color){
+  if(el.classList.contains('bursting')) return;
+  el.classList.add('bursting');
+
+  const rect = el.getBoundingClientRect();
+  const fieldRect = field.getBoundingClientRect();
+  const cx = rect.left - fieldRect.left + rect.width/2;
+  const cy = rect.top - fieldRect.top + rect.height/2;
+
+  /* sparkle burst */
+  for(let i=0;i<16;i++){
+    const sp = document.createElement('div');
+    sp.className = 'sparkle';
+    const s = 2 + Math.random()*4;
+    sp.style.width = s+'px';
+    sp.style.height = s+'px';
+    sp.style.left = cx+'px';
+    sp.style.top = cy+'px';
+    sp.style.background = Math.random() > 0.4 ? color : '#fff3dc';
+    field.appendChild(sp);
+    const angle = Math.random()*Math.PI*2;
+    const dist = 30 + Math.random()*70;
+    const tx = Math.cos(angle)*dist;
+    const ty = Math.sin(angle)*dist;
+    sp.animate([
+      {transform:'translate(0,0) scale(0.5)', opacity:1},
+      {transform:`translate(${tx}px, ${ty}px) scale(1.1)`, opacity:0.9, offset:0.4},
+      {transform:`translate(${tx*1.3}px, ${ty*1.3}px) scale(0)`, opacity:0}
+    ], {duration:700+Math.random()*400, easing:'ease-out'});
+    setTimeout(()=>sp.remove(), 1150);
+  }
+
+  /* comet streak across the sky */
+  const comet = document.createElement('div');
+  comet.className = 'comet-trail';
+  comet.style.left = cx+'px';
+  comet.style.top = cy+'px';
+  field.appendChild(comet);
+  const streakX = (Math.random() > 0.5 ? 1 : -1) * (120 + Math.random()*80);
+  const streakY = 40 + Math.random()*40;
+  comet.animate([
+    {transform:'translate(0,0)', opacity:1},
+    {transform:`translate(${streakX}px, ${streakY}px)`, opacity:0}
+  ], {duration:600, easing:'ease-in'});
+  setTimeout(()=>comet.remove(), 650);
+
+  const msg = nextMessage();
+  bubble.textContent = msg;
+  bubble.classList.remove('show');
+  void bubble.offsetWidth;
+  bubble.classList.add('show');
+
+  setTimeout(()=>{
+    el.remove();
+    spawnStar(true);
+  }, 480);
+}
+
+for(let i=0;i<STAR_COUNT;i++) spawnStar(false);
+
+/* ---------- journal (paylaşılan, Firebase ilə) ---------- */
+const entriesList = document.getElementById('entriesList');
+const entryInput = document.getElementById('entryInput');
+const saveBtn = document.getElementById('saveBtn');
+const whoBtn = document.getElementById('whoBtn');
+
+/* ---- kim yazır (yalnız bu cihazda yadda saxlanır) ---- */
+function getAuthor(){
+  let name = localStorage.getItem('authorName');
+  if(!name){
+    name = (prompt('Adını yaz (ilk dəfə üçün, sonra dəyişə bilərsən):') || 'Mən').trim() || 'Mən';
+    localStorage.setItem('authorName', name);
+  }
+  return name;
+}
+let currentAuthor = getAuthor();
+whoBtn.textContent = currentAuthor;
+whoBtn.addEventListener('click', ()=>{
+  const name = (prompt('Adını dəyiş:', currentAuthor) || currentAuthor).trim();
+  if(name){
+    currentAuthor = name;
+    localStorage.setItem('authorName', name);
+    whoBtn.textContent = name;
+  }
+});
+
+function todayKey(){
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function displayDate(dstr){
+  const d = new Date(dstr+'T00:00:00');
+  return d.toLocaleDateString('az-AZ', {day:'numeric', month:'long', year:'numeric'});
+}
+
+function renderEntries(data){
+  if(!data){
+    entriesList.innerHTML = '<div class="empty-note">Hələ qeyd yoxdur. İlk qeydini bu gün yaz.</div>';
+    return;
+  }
+  const items = Object.entries(data).map(([id, item])=>({id, ...item}));
+  items.sort((a,b)=> b.date.localeCompare(a.date) || (b.createdAt||0)-(a.createdAt||0));
+  entriesList.innerHTML = '';
+  items.forEach(item=>{
+    const div = document.createElement('div');
+    div.className = 'entry';
+    div.innerHTML = `
+      <div class="entry-meta">
+        <span><span class="entry-author"></span> · <span class="entry-date"></span></span>
+        <span class="entry-days">${item.daysLeft} gün qalmışdı</span>
+      </div>
+      <div class="entry-text"></div>
+      <div style="margin-top:8px;"><button class="entry-del">sil</button></div>
+    `;
+    div.querySelector('.entry-author').textContent = item.author || 'Naməlum';
+    div.querySelector('.entry-date').textContent = displayDate(item.date);
+    div.querySelector('.entry-text').textContent = item.text;
+    div.querySelector('.entry-del').addEventListener('click', ()=>{
+      entriesRef.child(item.id).remove().catch(e=>console.error(e));
+    });
+    entriesList.appendChild(div);
+  });
+}
+
+entriesList.innerHTML = '<div class="loading">Yüklənir…</div>';
+entriesRef.on('value', (snapshot)=>{
+  renderEntries(snapshot.val());
+}, (err)=>{
+  console.error(err);
+  entriesList.innerHTML = '<div class="empty-note">Yükləmə alınmadı — Firebase konfiqini yoxla.</div>';
+});
+
+saveBtn.addEventListener('click', ()=>{
+  const text = entryInput.value.trim();
+  if(!text) return;
+  const payload = {
+    date: todayKey(),
+    text,
+    author: currentAuthor,
+    daysLeft: currentDaysLeft,
+    createdAt: Date.now()
+  };
+  entriesRef.push(payload)
+    .then(()=>{ entryInput.value = ''; })
+    .catch(e=>console.error(e));
+});
+</script>
+
+</body>
+</html>
